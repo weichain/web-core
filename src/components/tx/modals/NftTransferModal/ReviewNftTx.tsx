@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react'
-import { type SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
+import { type SafeTransaction } from '@weichain/safe-core-sdk-types'
 import { Box, Typography } from '@mui/material'
 import SendFromBlock from '../../SendFromBlock'
 import SignOrExecuteForm from '../../SignOrExecuteForm'

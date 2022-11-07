@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { useEffect, useMemo } from 'react'
 import type { BigNumber } from 'ethers'
-import type Safe from '@gnosis.pm/safe-core-sdk'
+import type Safe from '@weichain/safe-core-sdk'
 import { encodeSignatures } from '@/services/tx/encodeSignatures'
-import type { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
-import { OperationType } from '@gnosis.pm/safe-core-sdk-types'
+import type { SafeTransaction } from '@weichain/safe-core-sdk-types'
+import { OperationType } from '@weichain/safe-core-sdk-types'
 import useAsync from '@/hooks/useAsync'
 import { useWeb3ReadOnly } from '@/hooks/wallets/web3'
 import useSafeAddress from './useSafeAddress'
@@ -52,10 +53,9 @@ const useGasLimit = (
     return getEncodedSafeTx(safeSDK, safeTx, isOwner ? walletAddress : undefined)
   }, [safeSDK, safeTx, walletAddress, isOwner])
 
-  const operationType = useMemo<number>(
-    () => (safeTx?.data.operation == OperationType.DelegateCall ? 1 : 0),
-    [safeTx?.data.operation],
-  )
+  const operationType = useMemo<number>(() => (safeTx?.data.operation == OperationType.DelegateCall ? 1 : 0), [
+    safeTx?.data.operation,
+  ])
 
   const [gasLimit, gasLimitError, gasLimitLoading] = useAsync<BigNumber>(() => {
     if (!safeAddress || !walletAddress || !encodedSafeTx || !web3ReadOnly) return

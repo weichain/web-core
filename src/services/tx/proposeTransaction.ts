@@ -1,6 +1,6 @@
 import type { Operation, TransactionDetails } from '@gnosis.pm/safe-react-gateway-sdk'
 import { proposeTransaction } from '@gnosis.pm/safe-react-gateway-sdk'
-import type { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
+import type { SafeTransaction } from '@weichain/safe-core-sdk-types'
 
 const proposeTx = async (
   chainId: string,
@@ -17,7 +17,8 @@ const proposeTx = async (
     safeTxHash,
     sender,
     value: tx.data.value.toString(),
-    operation: tx.data.operation as unknown as Operation,
+    // eslint-disable-next-line prettier/prettier
+    operation: (tx.data.operation as unknown) as Operation,
     nonce: tx.data.nonce.toString(),
     safeTxGas: tx.data.safeTxGas.toString(),
     baseGas: tx.data.baseGas.toString(),

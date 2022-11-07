@@ -7,14 +7,14 @@ import {
   getSafeSingletonDeployment,
   getSignMessageLibDeployment,
   type SingletonDeployment,
-} from '@gnosis.pm/safe-deployments'
+} from '@weichain/safe-deployments'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
 import { Contract } from 'ethers'
 import { Interface } from '@ethersproject/abi'
 import semverSatisfies from 'semver/functions/satisfies'
 import type { SafeInfo } from '@gnosis.pm/safe-react-gateway-sdk'
 import { getMasterCopies, type ChainInfo } from '@gnosis.pm/safe-react-gateway-sdk'
-import type { GetContractProps, SafeVersion } from '@gnosis.pm/safe-core-sdk-types'
+import type { GetContractProps, SafeVersion } from '@weichain/safe-core-sdk-types'
 import { type Compatibility_fallback_handler } from '@/types/contracts/Compatibility_fallback_handler'
 import { type Sign_message_lib } from '@/types/contracts/Sign_message_lib'
 import { createEthersAdapter, isValidSafeVersion } from '@/hooks/coreSDK/safeCoreSDK'

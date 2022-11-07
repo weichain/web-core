@@ -1,6 +1,6 @@
 import { setSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
-import type Safe from '@gnosis.pm/safe-core-sdk'
-import { type TransactionResult } from '@gnosis.pm/safe-core-sdk-types'
+import type Safe from '@weichain/safe-core-sdk'
+import { type TransactionResult } from '@weichain/safe-core-sdk-types'
 import { getTransactionDetails, postSafeGasEstimation } from '@gnosis.pm/safe-react-gateway-sdk'
 import extractTxInfo from '../extractTxInfo'
 import proposeTx from '../proposeTransaction'

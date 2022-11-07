@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Typography } from '@mui/material'
-import type { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
+import type { SafeTransaction } from '@weichain/safe-core-sdk-types'
 
 import useAsync from '@/hooks/useAsync'
 import SignOrExecuteForm from '@/components/tx/SignOrExecuteForm'

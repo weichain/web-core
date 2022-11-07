@@ -1,9 +1,10 @@
-import type { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
+/* eslint-disable prettier/prettier */
+import type { SafeTransaction } from '@weichain/safe-core-sdk-types'
 import { txDispatch, txSubscribe, TxEvent } from '../txEvents'
 
-const tx = {
+const tx = ({
   safeTxHash: '0x123',
-} as unknown as SafeTransaction
+} as unknown) as SafeTransaction
 
 describe('txEvents', () => {
   it('should dispatch and subscribe to the PROCESSING event', () => {

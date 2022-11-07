@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { shouldUseEthSignMethod } from '@/hooks/wallets/wallets'
 import type { ConnectedWallet } from '@/services/onboard'
-import { ZERO_ADDRESS } from '@gnosis.pm/safe-core-sdk/dist/src/utils/constants'
+import { ZERO_ADDRESS } from '@weichain/safe-core-sdk/dist/src/utils/constants'
 import type { EIP1193Provider } from '@web3-onboard/core'
 
 describe('shouldUseEthSignMethod', () => {
@@ -9,7 +10,7 @@ describe('shouldUseEthSignMethod', () => {
       address: ZERO_ADDRESS,
       chainId: '4',
       label: 'Ledger',
-      provider: null as unknown as EIP1193Provider,
+      provider: (null as unknown) as EIP1193Provider,
     }
 
     const result = shouldUseEthSignMethod(mockWallet)
@@ -22,7 +23,7 @@ describe('shouldUseEthSignMethod', () => {
       address: ZERO_ADDRESS,
       chainId: '4',
       label: 'Trezor',
-      provider: null as unknown as EIP1193Provider,
+      provider: (null as unknown) as EIP1193Provider,
     }
 
     const result = shouldUseEthSignMethod(mockWallet)
@@ -35,7 +36,7 @@ describe('shouldUseEthSignMethod', () => {
       address: ZERO_ADDRESS,
       chainId: '4',
       label: 'Safe Mobile',
-      provider: null as unknown as EIP1193Provider,
+      provider: (null as unknown) as EIP1193Provider,
     }
 
     const result = shouldUseEthSignMethod(mockWallet)
@@ -48,7 +49,7 @@ describe('shouldUseEthSignMethod', () => {
       address: ZERO_ADDRESS,
       chainId: '4',
       label: 'WalletConnect',
-      provider: null as unknown as EIP1193Provider,
+      provider: (null as unknown) as EIP1193Provider,
     }
 
     const result = shouldUseEthSignMethod(mockWallet)
@@ -61,7 +62,7 @@ describe('shouldUseEthSignMethod', () => {
       address: ZERO_ADDRESS,
       chainId: '4',
       label: 'MetaMask',
-      provider: null as unknown as EIP1193Provider,
+      provider: (null as unknown) as EIP1193Provider,
     }
 
     const result = shouldUseEthSignMethod(mockWallet)

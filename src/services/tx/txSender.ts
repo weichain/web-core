@@ -6,7 +6,7 @@ import type {
   SafeTransactionDataPartial,
   TransactionOptions,
   TransactionResult,
-} from '@gnosis.pm/safe-core-sdk-types'
+} from '@weichain/safe-core-sdk-types'
 import type { RequestId } from '@gnosis.pm/safe-apps-sdk'
 import extractTxInfo from '@/services/tx/extractTxInfo'
 import proposeTx from './proposeTransaction'
@@ -14,9 +14,9 @@ import { txDispatch, TxEvent } from './txEvents'
 import { getSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import type { EthersError } from '@/utils/ethers-utils'
 import { didReprice, didRevert } from '@/utils/ethers-utils'
-import type { RemoveOwnerTxParams } from '@gnosis.pm/safe-core-sdk'
-import type Safe from '@gnosis.pm/safe-core-sdk'
-import type { AddOwnerTxParams, SwapOwnerTxParams } from '@gnosis.pm/safe-core-sdk/dist/src/Safe'
+import type { RemoveOwnerTxParams } from '@weichain/safe-core-sdk'
+import type Safe from '@weichain/safe-core-sdk'
+import type { AddOwnerTxParams, SwapOwnerTxParams } from '@weichain/safe-core-sdk/dist/src/Safe'
 import type MultiSendCallOnlyEthersContract from '@gnosis.pm/safe-ethers-lib/dist/src/contracts/MultiSendCallOnly/MultiSendCallOnlyEthersContract'
 import type { Web3Provider } from '@ethersproject/providers'
 import type { ContractTransaction } from 'ethers'
@@ -25,7 +25,7 @@ import type { SpendingLimitTxParams } from '@/components/tx/modals/TokenTransfer
 import { getSpendingLimitContract } from '@/services/contracts/spendingLimitContracts'
 import EthersAdapter from '@gnosis.pm/safe-ethers-lib'
 import { Errors, logError } from '@/services/exceptions'
-import { EMPTY_DATA } from '@gnosis.pm/safe-core-sdk/dist/src/utils/constants'
+import { EMPTY_DATA } from '@weichain/safe-core-sdk/dist/src/utils/constants'
 
 const getAndValidateSafeSDK = (): Safe => {
   const safeSDK = getSafeSDK()
@@ -62,7 +62,8 @@ const estimateSafeTxGas = async (
     to: txParams.to,
     value: txParams.value,
     data: txParams.data,
-    operation: (txParams.operation as unknown as Operation) || Operation.CALL,
+    // eslint-disable-next-line prettier/prettier
+    operation: ((txParams.operation as unknown) as Operation) || Operation.CALL,
   })
 }
 

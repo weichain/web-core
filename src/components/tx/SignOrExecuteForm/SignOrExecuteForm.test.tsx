@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { act, fireEvent, render } from '@/tests/test-utils'
 import SignOrExecuteForm from '@/components/tx/SignOrExecuteForm/index'
-import type { SafeSignature, SafeTransaction } from '@gnosis.pm/safe-core-sdk-types'
+import type { SafeSignature, SafeTransaction } from '@weichain/safe-core-sdk-types'
 import * as useSafeInfoHook from '@/hooks/useSafeInfo'
 import * as useGasLimitHook from '@/hooks/useGasLimit'
 import * as txSender from '@/services/tx/txSender'
@@ -11,7 +12,7 @@ import type { SafeInfo, TransactionDetails } from '@gnosis.pm/safe-react-gateway
 import { waitFor } from '@testing-library/react'
 import type { ConnectedWallet } from '@/services/onboard'
 import * as safeCoreSDK from '@/hooks/coreSDK/safeCoreSDK'
-import type Safe from '@gnosis.pm/safe-core-sdk'
+import type Safe from '@weichain/safe-core-sdk'
 import { Web3Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
 import * as wrongChain from '@/hooks/useIsWrongChain'
@@ -52,11 +53,11 @@ describe('SignOrExecuteForm', () => {
   beforeEach(() => {
     jest.resetAllMocks()
 
-    mockSDK = {
+    mockSDK = ({
       isModuleEnabled: jest.fn(() => false),
       createTransaction: jest.fn(() => 'asd'),
       getTransactionHash: jest.fn(() => '0x10'),
-    } as unknown as Safe
+    } as unknown) as Safe
 
     jest.spyOn(safeCoreSDK, 'getSafeSDK').mockReturnValue(mockSDK)
     jest.spyOn(useSafeInfoHook, 'default').mockImplementation(() => ({

@@ -1,5 +1,5 @@
 import { type EIP1193Provider } from '@web3-onboard/core'
-import Safe from '@gnosis.pm/safe-core-sdk'
+import Safe from '@weichain/safe-core-sdk'
 import { ethers } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 import EthersAdapter from '@gnosis.pm/safe-ethers-lib'
@@ -7,7 +7,7 @@ import semverSatisfies from 'semver/functions/satisfies'
 import chains from '@/config/chains'
 import { getWeb3 } from '@/hooks/wallets/web3'
 import ExternalStore from '@/services/ExternalStore'
-import type { SafeVersion } from '@gnosis.pm/safe-core-sdk-types'
+import type { SafeVersion } from '@weichain/safe-core-sdk-types'
 
 const isLegacyVersion = (safeVersion: string): boolean => {
   const LEGACY_VERSION = '<1.3.0'

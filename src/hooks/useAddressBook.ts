@@ -4,6 +4,7 @@ import useChainId from './useChainId'
 
 const useAddressBook = () => {
   const chainId = useChainId()
+
   return useAppSelector((state) => selectAddressBookByChain(state, chainId))
 }
 

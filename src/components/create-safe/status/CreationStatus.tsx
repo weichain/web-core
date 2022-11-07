@@ -58,7 +58,6 @@ export const CreationStatus = ({ params, setStep }: Props) => {
     status === SafeCreationStatus.REVERTED ||
     status === SafeCreationStatus.TIMEOUT ||
     status === SafeCreationStatus.WALLET_REJECTED
-
   return (
     <Paper
       sx={{

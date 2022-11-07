@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import * as spendingLimit from '@/services/contracts/spendingLimitContracts'
 import { JsonRpcProvider } from '@ethersproject/providers'
-import { ZERO_ADDRESS } from '@gnosis.pm/safe-core-sdk/dist/src/utils/constants'
+import { ZERO_ADDRESS } from '@weichain/safe-core-sdk/dist/src/utils/constants'
 import type { AllowanceModule } from '@/types/contracts'
 import {
   getSpendingLimits,
@@ -41,9 +42,9 @@ describe('getSpendingLimits', () => {
     jest.spyOn(spendingLimit, 'getSpendingLimitModuleAddress').mockReturnValue('0x1')
     jest.spyOn(spendingLimit, 'getSpendingLimitContract').mockImplementation(
       jest.fn(() => {
-        return {
+        return ({
           getDelegates: getDelegatesMock,
-        } as unknown as AllowanceModule
+        } as unknown) as AllowanceModule
       }),
     )
 
@@ -70,11 +71,11 @@ describe('getSpendingLimits', () => {
     jest.spyOn(spendingLimit, 'getSpendingLimitModuleAddress').mockReturnValue('0x1')
     jest.spyOn(spendingLimit, 'getSpendingLimitContract').mockImplementation(
       jest.fn(() => {
-        return {
+        return ({
           getDelegates: getDelegatesMock,
           getTokens: getTokensMock,
           getTokenAllowance: getTokenAllowanceMock,
-        } as unknown as AllowanceModule
+        } as unknown) as AllowanceModule
       }),
     )
 
@@ -97,11 +98,11 @@ describe('getSpendingLimits', () => {
     jest.spyOn(spendingLimit, 'getSpendingLimitModuleAddress').mockReturnValue('0x1')
     jest.spyOn(spendingLimit, 'getSpendingLimitContract').mockImplementation(
       jest.fn(() => {
-        return {
+        return ({
           getDelegates: getDelegatesMock,
           getTokens: getTokensMock,
           getTokenAllowance: getTokenAllowanceMock,
-        } as unknown as AllowanceModule
+        } as unknown) as AllowanceModule
       }),
     )
 
@@ -114,7 +115,7 @@ describe('getSpendingLimits', () => {
 describe('getTokensForDelegate', () => {
   it('should fetch tokens for a given delegate', async () => {
     const getTokensMock = jest.fn(() => [])
-    const mockContract = { getTokens: getTokensMock } as unknown as AllowanceModule
+    const mockContract = ({ getTokens: getTokensMock } as unknown) as AllowanceModule
 
     await getTokensForDelegate(mockContract, ZERO_ADDRESS, '0x1')
 
@@ -131,7 +132,7 @@ describe('getTokenAllowanceForDelegate', () => {
       BigNumber.from(0),
       BigNumber.from(0),
     ])
-    const mockContract = { getTokenAllowance: getTokenAllowanceMock } as unknown as AllowanceModule
+    const mockContract = ({ getTokenAllowance: getTokenAllowanceMock } as unknown) as AllowanceModule
 
     const result = await getTokenAllowanceForDelegate(mockContract, ZERO_ADDRESS, '0x1', '0x10')
 

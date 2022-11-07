@@ -1,6 +1,6 @@
 import { renderHook } from '@/tests/test-utils'
 import { useEstimateSafeCreationGas } from '@/components/create-safe/useEstimateSafeCreationGas'
-import { EMPTY_DATA, ZERO_ADDRESS } from '@gnosis.pm/safe-core-sdk/dist/src/utils/constants'
+import { EMPTY_DATA, ZERO_ADDRESS } from '@weichain/safe-core-sdk/dist/src/utils/constants'
 import { type ConnectedWallet } from '@/hooks/wallets/useOnboard'
 import * as chainIdModule from '@/hooks/useChainId'
 import * as store from '@/store'
@@ -12,7 +12,7 @@ import { waitFor } from '@testing-library/react'
 import { type EIP1193Provider } from '@web3-onboard/core'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { BigNumber } from 'ethers'
-import type GnosisSafeProxyFactoryEthersContract from '@gnosis.pm/safe-ethers-lib/dist/src/contracts/GnosisSafeProxyFactory/GnosisSafeProxyFactoryEthersContract'
+import type GnosisSafeProxyFactoryEthersContract from '@weichain/safe-ethers-lib/dist/src/contracts/GnosisSafeProxyFactory/GnosisSafeProxyFactoryEthersContract'
 
 const mockProps = {
   owners: [],

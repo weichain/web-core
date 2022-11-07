@@ -66,6 +66,7 @@ const AddressBookTable = () => {
   }
 
   const addressBook = useAddressBook()
+
   const addressBookEntries = Object.entries(addressBook)
   const filteredEntries = useMemo(() => {
     if (!searchQuery) {
