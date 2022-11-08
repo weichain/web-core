@@ -23,6 +23,8 @@ import PagePlaceholder from '@/components/common/PagePlaceholder'
 import AddressBookIcon from '@/public/images/address-book/address-book.svg'
 import { useCurrentChain } from '@/hooks/useChains'
 
+import tableCss from '@/components/common/EnhancedTable/styles.module.css'
+
 const headCells = [
   { id: 'name', label: 'Name' },
   { id: 'address', label: 'Address' },
@@ -92,7 +94,7 @@ const AddressBookTable = () => {
       rawValue: '',
       sticky: true,
       content: (
-        <>
+        <div className={tableCss.actions}>
           <Track {...ADDRESS_BOOK_EVENTS.EDIT_ENTRY}>
             <Tooltip title="Edit entry" placement="top">
               <IconButton onClick={() => handleOpenModalWithValues(ModalType.ENTRY, address, name)} size="small">
@@ -122,7 +124,7 @@ const AddressBookTable = () => {
               </Button>
             </Track>
           )}
-        </>
+        </div>
       ),
     },
   }))
