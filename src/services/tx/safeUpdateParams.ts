@@ -1,5 +1,5 @@
-import type { MetaTransactionData } from '@weichain/safe-core-sdk-types'
-import { OperationType } from '@weichain/safe-core-sdk-types'
+import type { MetaTransactionData } from '@gnosis.pm/safe-core-sdk-types'
+import { OperationType } from '@gnosis.pm/safe-core-sdk-types'
 import type { ChainInfo, SafeInfo } from '@gnosis.pm/safe-react-gateway-sdk'
 import { getFallbackHandlerContractInstance, getGnosisSafeContractInstance } from '@/services/contracts/safeContracts'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
@@ -17,6 +17,7 @@ export const createUpdateSafeTxs = (safe: SafeInfo, chain: ChainInfo): MetaTrans
   const latestMasterCopy = getGnosisSafeContractInstance(chain, LATEST_SAFE_VERSION)
   const safeContractInstance = getGnosisSafeContractInstance(chain, safe.version)
 
+  // @ts-expect-error this was removed in 1.3.0 but we need to support it for older safe versions
   const changeMasterCopyCallData = safeContractInstance.encode('changeMasterCopy', [latestMasterCopy.getAddress()])
 
   const fallbackHandlerAddress = getFallbackHandlerContractInstance(chain.chainId).address
