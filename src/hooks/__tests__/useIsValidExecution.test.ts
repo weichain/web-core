@@ -1,16 +1,14 @@
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
-import type { SafeTransaction, SafeSignature } from '@weichain/safe-core-sdk-types'
-import { type SafeInfo } from '@gnosis.pm/safe-react-gateway-sdk'
+import type { SafeTransaction, SafeSignature, SafeVersion, SafeTransactionData } from '@weichain/safe-core-sdk-types'
 
 import * as safeContracts from '@/services/contracts/safeContracts'
 import * as useWalletHook from '@/hooks/wallets/useWallet'
-import * as useSafeInfoHook from '@/hooks/useSafeInfo'
 import { act, renderHook } from '@/tests/test-utils'
 import useIsValidExecution from '../useIsValidExecution'
 import type { EthersError } from '@/utils/ethers-utils'
 import type { ConnectedWallet } from '../wallets/useOnboard'
-import type { EthersTxReplacedReason } from '@/utils/ethers-utils'
+import type { EthersTransactionOptions, EthersTransactionResult } from '@weichain/safe-ethers-lib'
 
 const createSafeTx = (data = '0x'): SafeTransaction => {
   return {
@@ -35,8 +33,7 @@ const createSafeTx = (data = '0x'): SafeTransaction => {
   } as SafeTransaction
 }
 
-let mockTx: SafeTransaction
-
+const mockTx = createSafeTx()
 const mockGas = BigNumber.from(1000)
 
 describe('useIsValidExecution', () => {
@@ -46,79 +43,61 @@ describe('useIsValidExecution', () => {
     jest.spyOn(useWalletHook, 'default').mockReturnValue({
       address: ethers.utils.hexZeroPad('0x123', 20),
     } as ConnectedWallet)
-
-    jest.spyOn(useSafeInfoHook, 'default').mockReturnValue({
-      safe: {
-        owners: [
-          {
-            value: ethers.utils.hexZeroPad('0x123', 20),
-          },
-        ],
-      } as SafeInfo,
-      safeAddress: ethers.utils.hexZeroPad('0x456', 20),
-      safeLoaded: true,
-      safeLoading: false,
-    })
-
-    // Create a new tx for each test case
-    mockTx = createSafeTx()
   })
 
-  it('should add a missing signature and return a boolean if the transaction is valid', async () => {
+  it('should return a boolean if the transaction is valid', async () => {
     jest.spyOn(safeContracts, 'getSpecificGnosisSafeContractInstance').mockReturnValue({
       contract: {
-        // @ts-expect-error
         callStatic: {
-          execTransaction: jest.fn((_1, _2, _3, _4, _5, _6, _7, _8, _9, signatures: string) =>
-            Promise.resolve(signatures.includes(ethers.utils.hexZeroPad('0x123', 20))),
-          ),
+          execTransaction: jest.fn(() => Promise.resolve(true)),
         },
       },
-    })
-
-    const { result } = renderHook(() => useIsValidExecution(mockTx, mockGas))
-
-    let { isValidExecution, executionValidationError, isValidExecutionLoading } = result.current
-
-    expect(isValidExecution).toEqual(undefined)
-    expect(executionValidationError).toBe(undefined)
-    expect(isValidExecutionLoading).toBe(true)
-
-    await act(async () => {
-      await new Promise(process.nextTick)
-    })
-    ;({ isValidExecution, executionValidationError, isValidExecutionLoading } = result.current)
-
-    expect(isValidExecution).toBe(true)
-    expect(executionValidationError).toBe(undefined)
-    expect(isValidExecutionLoading).toBe(false)
-  })
-
-  it('should not add a signature if no owner is connected and return a boolean if the transaction is valid', async () => {
-    // Connect a different owner and add a different sig
-    jest.spyOn(useWalletHook, 'default').mockReturnValue({
-      address: ethers.utils.hexZeroPad('0xabc', 20),
-    } as ConnectedWallet)
-
-    jest.spyOn(safeContracts, 'getSpecificGnosisSafeContractInstance').mockReturnValue({
-      contract: {
-        // @ts-expect-error
-        callStatic: {
-          execTransaction: jest.fn((_1, _2, _3, _4, _5, _6, _7, _8, _9, signatures: string) =>
-            Promise.resolve(
-              signatures.includes(ethers.utils.hexZeroPad('0x123', 20)) &&
-                !signatures.includes(ethers.utils.hexZeroPad('0xabc', 20)),
-            ),
-          ),
-        },
+      getVersion: function (): Promise<SafeVersion> {
+        throw new Error('Function not implemented.')
       },
-    })
-
-    mockTx.addSignature({
-      signer: ethers.utils.hexZeroPad('0x123', 20),
-      data: '0xEEE',
-      staticPart: () => '0xEEE',
-      dynamicPart: () => '',
+      getAddress: function (): string {
+        throw new Error('Function not implemented.')
+      },
+      getNonce: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getThreshold: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getOwners: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isOwner: function (address: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      getTransactionHash: function (safeTransactionData: SafeTransactionData): Promise<string> {
+        throw new Error('Function not implemented.')
+      },
+      approvedHashes: function (ownerAddress: string, hash: string): Promise<BigNumber> {
+        throw new Error('Function not implemented.')
+      },
+      approveHash: function (
+        hash: string,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      getModules: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isModuleEnabled: function (moduleAddress: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      execTransaction: function (
+        safeTransaction: SafeTransaction,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      encode: undefined,
+      estimateGas: function (methodName: string, params: any[], options: EthersTransactionOptions): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
     })
 
     const { result } = renderHook(() => useIsValidExecution(mockTx, mockGas))
@@ -142,10 +121,55 @@ describe('useIsValidExecution', () => {
   it('should throw if the transaction is invalid', async () => {
     jest.spyOn(safeContracts, 'getSpecificGnosisSafeContractInstance').mockReturnValue({
       contract: {
-        // @ts-expect-error
         callStatic: {
           execTransaction: jest.fn(() => Promise.reject('Some error')),
         },
+      },
+      getVersion: function (): Promise<SafeVersion> {
+        throw new Error('Function not implemented.')
+      },
+      getAddress: function (): string {
+        throw new Error('Function not implemented.')
+      },
+      getNonce: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getThreshold: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getOwners: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isOwner: function (address: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      getTransactionHash: function (safeTransactionData: SafeTransactionData): Promise<string> {
+        throw new Error('Function not implemented.')
+      },
+      approvedHashes: function (ownerAddress: string, hash: string): Promise<BigNumber> {
+        throw new Error('Function not implemented.')
+      },
+      approveHash: function (
+        hash: string,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      getModules: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isModuleEnabled: function (moduleAddress: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      execTransaction: function (
+        safeTransaction: SafeTransaction,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      encode: undefined,
+      estimateGas: function (methodName: string, params: any[], options: EthersTransactionOptions): Promise<number> {
+        throw new Error('Function not implemented.')
       },
     })
 
@@ -170,14 +194,59 @@ describe('useIsValidExecution', () => {
 
   it('should append the error code description to the error thrown', async () => {
     const error = new Error('Some error') as EthersError
-    error.reason = 'GS026' as EthersTxReplacedReason
+    // error.reason = 'GS026'
 
     jest.spyOn(safeContracts, 'getSpecificGnosisSafeContractInstance').mockReturnValue({
       contract: {
-        // @ts-expect-error
         callStatic: {
           execTransaction: jest.fn(() => Promise.reject(error)),
         },
+      },
+      getVersion: function (): Promise<SafeVersion> {
+        throw new Error('Function not implemented.')
+      },
+      getAddress: function (): string {
+        throw new Error('Function not implemented.')
+      },
+      getNonce: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getThreshold: function (): Promise<number> {
+        throw new Error('Function not implemented.')
+      },
+      getOwners: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isOwner: function (address: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      getTransactionHash: function (safeTransactionData: SafeTransactionData): Promise<string> {
+        throw new Error('Function not implemented.')
+      },
+      approvedHashes: function (ownerAddress: string, hash: string): Promise<BigNumber> {
+        throw new Error('Function not implemented.')
+      },
+      approveHash: function (
+        hash: string,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      getModules: function (): Promise<string[]> {
+        throw new Error('Function not implemented.')
+      },
+      isModuleEnabled: function (moduleAddress: string): Promise<boolean> {
+        throw new Error('Function not implemented.')
+      },
+      execTransaction: function (
+        safeTransaction: SafeTransaction,
+        options?: EthersTransactionOptions | undefined,
+      ): Promise<EthersTransactionResult> {
+        throw new Error('Function not implemented.')
+      },
+      encode: undefined,
+      estimateGas: function (methodName: string, params: any[], options: EthersTransactionOptions): Promise<number> {
+        throw new Error('Function not implemented.')
       },
     })
 
