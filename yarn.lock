@@ -4441,33 +4441,33 @@
     "@web3-onboard/common" "^2.2.3"
     rxjs "^7.5.2"
 
-"@weichain/safe-core-sdk-types@1.6.1", "@weichain/safe-core-sdk-types@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@weichain/safe-core-sdk-types/-/safe-core-sdk-types-1.6.1.tgz#9792ac98a18c5e9bea59e2977aa929b3ae8a6f45"
-  integrity sha512-KfRmYhtNEByhChvUnxRANs9oD325417Qe+ETofkWH95kao5cbtUShbPhcW1gbovzLRbRyp/+8DO9fPIUogOmfA==
+"@weichain/safe-core-sdk-types@1.6.3", "@weichain/safe-core-sdk-types@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@weichain/safe-core-sdk-types/-/safe-core-sdk-types-1.6.3.tgz#f56c5a923b79f8a94ec015c106cba0c11a153141"
+  integrity sha512-06dM1sKVUB+H81OoB3T21tJ7mu2lYxisNjkpLFIdXAbguvYSFA9n1ozUaynScCFKNgwdTwvAgsPavT82ukoobg==
   dependencies:
     "@ethersproject/bignumber" "^5.7.0"
     "@ethersproject/contracts" "^5.7.0"
-    "@weichain/safe-deployments" "1.16.0"
+    "@weichain/safe-deployments" "1.17.0"
     web3-core "^1.8.0"
     web3-utils "^1.8.0"
 
-"@weichain/safe-core-sdk@3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@weichain/safe-core-sdk/-/safe-core-sdk-3.1.1.tgz#1bc0677b39a1502702d216a57c5e9573de47ba28"
-  integrity sha512-X49c5DXFHfku8RMCDvYr0HOyAA+nutxR4Lw2n+PV6ZyBCT7MmG9yGJMAMaVa/xpeVvOmWQXkdmtrdBVfrwtr0A==
+"@weichain/safe-core-sdk@3.1.3":
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@weichain/safe-core-sdk/-/safe-core-sdk-3.1.3.tgz#d7446ce3d0be54a7ed3999aea0c80df98aaffd29"
+  integrity sha512-QiAQnHVTMtfgLGqHslJrAmLfW73EFhlbCIGvDbYulX0tPmLr0FdK2L8Ictto04uxq09l+eRLLx8f63sPe4GcKA==
   dependencies:
     "@ethersproject/solidity" "^5.7.0"
-    "@weichain/safe-core-sdk-types" "^1.6.1"
-    "@weichain/safe-deployments" "1.16.0"
+    "@weichain/safe-core-sdk-types" "^1.6.3"
+    "@weichain/safe-deployments" "1.17.0"
     ethereumjs-util "^7.1.5"
     semver "^7.3.7"
     web3-utils "^1.8.0"
 
-"@weichain/safe-deployments@1.16.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@weichain/safe-deployments/-/safe-deployments-1.16.0.tgz#9fa65f2854cb5786d238e3ecd9b0c06cc7fa7261"
-  integrity sha512-HvuUJK01C1TF0lUTnpWoj7mm+L3+iczG6fnvwkGFgRCTjlINKXIXfaGXLbTzQRXVQeDsPyuKZeZWEgue0JYFSw==
+"@weichain/safe-deployments@1.17.0":
+  version "1.17.0"
+  resolved "https://registry.yarnpkg.com/@weichain/safe-deployments/-/safe-deployments-1.17.0.tgz#76991b8097161cb1b78dcdfd9781dc79733d6081"
+  integrity sha512-xwXNKcSJizmi8ApbBoaRsLUcpw/01rbBzLtxXmxrPfQyr2r4oEQFLALk2CVwNwZRwpx5Prderfs6qfawBLgQ6Q==
   dependencies:
     semver "^7.3.7"
 
