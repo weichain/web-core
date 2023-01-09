@@ -1,12 +1,17 @@
 import { useEffect } from 'react'
 import { closeNotification, showNotification } from '@/store/notificationsSlice'
-import { ImplementationVersionState } from '@gnosis.pm/safe-react-gateway-sdk'
+import { ImplementationVersionState } from '@safe-global/safe-gateway-typescript-sdk'
 import useSafeInfo from './useSafeInfo'
 import { useAppDispatch } from '@/store'
 import { AppRoutes } from '@/config/routes'
 import useAsync from './useAsync'
-import { isOldestVersion, isValidMasterCopy } from '@/services/contracts/safeContracts'
+import { isValidMasterCopy } from '@/services/contracts/safeContracts'
 import { useRouter } from 'next/router'
+import useIsSafeOwner from './useIsSafeOwner'
+import { isValidSafeVersion } from './coreSDK/safeCoreSDK'
+import useSafeAddress from '@/hooks/useSafeAddress'
+
+const OLD_APP_URL = 'https://gnosis-safe.io/app'
 
 const CLI_LINK = {
   href: 'https://github.com/5afe/safe-cli',
@@ -19,19 +24,21 @@ const CLI_LINK = {
 const useSafeNotifications = (): void => {
   const dispatch = useAppDispatch()
   const { query } = useRouter()
-  const { safe } = useSafeInfo()
+  const { safe, safeAddress } = useSafeInfo()
   const { chainId, version, implementationVersionState } = safe
+  const isOwner = useIsSafeOwner()
+  const urlSafeAddress = useSafeAddress()
 
   /**
    * Show a notification when the Safe version is out of date
    */
 
   useEffect(() => {
-    if (implementationVersionState !== ImplementationVersionState.OUTDATED) {
-      return
-    }
+    if (safeAddress !== urlSafeAddress) return
+    if (!isOwner) return
+    if (implementationVersionState !== ImplementationVersionState.OUTDATED) return
 
-    const isOldSafe = isOldestVersion(version)
+    const isOldSafe = !isValidSafeVersion(version)
 
     const id = dispatch(
       showNotification({
@@ -39,25 +46,25 @@ const useSafeNotifications = (): void => {
         groupKey: 'safe-outdated-version',
 
         message: isOldSafe
-          ? `Safe version ${version} is not supported by this web app anymore. We recommend using the command line interface instead.`
+          ? `Safe version ${version} is not supported by this web app anymore. You can update your Safe via the old web app here.`
           : `Your Safe version ${version} is out of date. Please update it.`,
 
-        link: isOldSafe
-          ? CLI_LINK
-          : {
-              href: {
+        link: {
+          href: isOldSafe
+            ? `${OLD_APP_URL}/${query.safe}/settings/details`
+            : {
                 pathname: AppRoutes.settings.setup,
                 query: { safe: query.safe },
               },
-              title: 'Update Safe',
-            },
+          title: 'Update Safe',
+        },
       }),
     )
 
     return () => {
       dispatch(closeNotification({ id }))
     }
-  }, [dispatch, implementationVersionState, version, query.safe])
+  }, [dispatch, implementationVersionState, version, query.safe, isOwner, safeAddress, urlSafeAddress])
 
   /**
    * Show a notification when the Safe master copy is not supported
@@ -71,9 +78,7 @@ const useSafeNotifications = (): void => {
   }, [chainId, masterCopy])
 
   useEffect(() => {
-    if (validMasterCopy === undefined || validMasterCopy) {
-      return
-    }
+    if (validMasterCopy === undefined || validMasterCopy) return
 
     const id = dispatch(
       showNotification({

@@ -4,7 +4,7 @@ import { useCallback, useEffect } from 'react'
 import { CircularProgress, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import { getBalances, getTransactionDetails } from '@gnosis.pm/safe-react-gateway-sdk'
+import { getBalances, getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
 import type { AddressBookItem, RequestId } from '@gnosis.pm/safe-apps-sdk'
 import { Methods } from '@gnosis.pm/safe-apps-sdk'
 
@@ -17,14 +17,12 @@ import { useSafeAppFromBackend } from '@/hooks/safe-apps/useSafeAppFromBackend'
 import useChainId from '@/hooks/useChainId'
 import useAddressBook from '@/hooks/useAddressBook'
 import { useSafePermissions } from '@/hooks/safe-apps/permissions'
-import useIsGranted from '@/hooks/useIsGranted'
 import { useCurrentChain } from '@/hooks/useChains'
 import { isSameUrl } from '@/utils/url'
-import { isMultisigDetailedExecutionInfo } from '@/utils/transaction-guards'
 import useTransactionQueueBarState from '@/components/safe-apps/AppFrame/useTransactionQueueBarState'
 import { gtmTrackPageview } from '@/services/analytics/gtm'
-import { getLegacyChainName } from '../utils'
 import useThirdPartyCookies from './useThirdPartyCookies'
+import useAnalyticsFromSafeApp from './useFromAppAnalytics'
 import useAppIsLoading from './useAppIsLoading'
 import useAppCommunicator, { CommunicatorMessages } from './useAppCommunicator'
 import { ThirdPartyCookiesWarning } from './ThirdPartyCookiesWarning'
@@ -37,6 +35,8 @@ import PermissionsPrompt from '../PermissionsPrompt'
 import { PermissionStatus } from '../types'
 
 import css from './styles.module.css'
+import SafeAppIframe from './SafeAppIframe'
+import useGetSafeInfo from './useGetSafeInfo'
 
 const UNKNOWN_APP_NAME = 'Unknown App'
 
@@ -52,7 +52,6 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
   const { safe, safeLoaded, safeAddress } = useSafeInfo()
   const addressBook = useAddressBook()
   const chain = useCurrentChain()
-  const granted = useIsGranted()
   const router = useRouter()
   const {
     expanded: queueBarExpanded,
@@ -62,13 +61,15 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
     transactions,
   } = useTransactionQueueBarState()
   const queueBarVisible = transactions.results.length > 0 && !queueBarDismissed
-  const [remoteApp] = useSafeAppFromBackend(appUrl, safe.chainId)
+  const [remoteApp, , isBackendAppsLoading] = useSafeAppFromBackend(appUrl, safe.chainId)
   const { safeApp: safeAppFromManifest } = useSafeAppFromManifest(appUrl, safe.chainId)
   const { thirdPartyCookiesDisabled, setThirdPartyCookiesDisabled } = useThirdPartyCookies()
   const { iframeRef, appIsLoading, isLoadingSlow, setAppIsLoading } = useAppIsLoading()
+  useAnalyticsFromSafeApp(iframeRef)
   const { getPermissions, hasPermission, permissionsRequest, setPermissionsRequest, confirmPermissionRequest } =
     useSafePermissions()
   const appName = useMemo(() => (remoteApp ? remoteApp.name : appUrl), [appUrl, remoteApp])
+
   const communicator = useAppCommunicator(iframeRef, remoteApp || safeAppFromManifest, chain, {
     onConfirmTransactions: openTxModal,
     onSignMessage: openSignMessageModal,
@@ -85,14 +86,7 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
     onGetEnvironmentInfo: () => ({
       origin: document.location.origin,
     }),
-    onGetSafeInfo: () => ({
-      safeAddress,
-      chainId: parseInt(chainId, 10),
-      owners: safe.owners.map((owner) => owner.value),
-      threshold: safe.threshold,
-      isReadOnly: !granted,
-      network: getLegacyChainName(chain?.chainName || '', chainId).toUpperCase(),
-    }),
+    onGetSafeInfo: useGetSafeInfo(),
     onGetSafeBalances: (currency) =>
       getBalances(chainId, safeAddress, currency, {
         exclude_spam: true,
@@ -130,7 +124,7 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
   }, [appUrl, iframeRef, setAppIsLoading, router])
 
   useEffect(() => {
-    if (!appIsLoading) {
+    if (!appIsLoading && !isBackendAppsLoading) {
       trackSafeAppEvent(
         {
           ...SAFE_APPS_EVENTS.OPEN_APP,
@@ -138,19 +132,16 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
         appName,
       )
     }
-  }, [appIsLoading, appName])
+  }, [appIsLoading, isBackendAppsLoading, appName])
 
   useEffect(() => {
-    const unsubscribe = txSubscribe(TxEvent.SAFE_APPS_REQUEST, async ({ txId, safeAppRequestId }) => {
+    const unsubscribe = txSubscribe(TxEvent.SAFE_APPS_REQUEST, async ({ safeAppRequestId, safeTxHash }) => {
       const currentSafeAppRequestId = signMessageModalState.requestId || txModalState.requestId
 
-      if (txId && currentSafeAppRequestId === safeAppRequestId) {
-        const { detailedExecutionInfo } = await getTransactionDetails(chainId, txId)
+      if (currentSafeAppRequestId === safeAppRequestId) {
+        trackSafeAppEvent(SAFE_APPS_EVENTS.PROPOSE_TRANSACTION, appName)
 
-        if (isMultisigDetailedExecutionInfo(detailedExecutionInfo)) {
-          trackSafeAppEvent(SAFE_APPS_EVENTS.TRANSACTION_CONFIRMED, appName)
-          communicator?.send({ safeTxHash: detailedExecutionInfo.safeTxHash }, safeAppRequestId)
-        }
+        communicator?.send({ safeTxHash }, safeAppRequestId)
 
         txModalState.isOpen ? closeTxModal() : closeSignMessageModal()
       }
@@ -168,7 +159,7 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
       closeSignMessageModal()
     }
 
-    trackSafeAppEvent(SAFE_APPS_EVENTS.TRANSACTION_REJECTED, appName)
+    trackSafeAppEvent(SAFE_APPS_EVENTS.PROPOSE_TRANSACTION_REJECTED, appName)
   }
 
   const onAcceptPermissionRequest = (origin: string, requestId: RequestId) => {
@@ -209,23 +200,25 @@ const AppFrame = ({ appUrl, allowedFeaturesList }: AppFrameProps): ReactElement 
           </div>
         )}
 
-        <iframe
-          className={css.iframe}
-          id={`iframe-${appUrl}`}
-          ref={iframeRef}
-          src={appUrl}
-          title={safeAppFromManifest?.name}
-          onLoad={onIframeLoad}
-          allow={allowedFeaturesList}
+        <div
           style={{
+            height: '100%',
             display: appIsLoading ? 'none' : 'block',
             paddingBottom: queueBarVisible ? TRANSACTION_BAR_HEIGHT : 0,
           }}
-        />
+        >
+          <SafeAppIframe
+            appUrl={appUrl}
+            allowedFeaturesList={allowedFeaturesList}
+            iframeRef={iframeRef}
+            onLoad={onIframeLoad}
+            title={safeAppFromManifest?.name}
+          />
+        </div>
 
         <TransactionQueueBar
           expanded={queueBarExpanded}
-          visible={!queueBarDismissed}
+          visible={queueBarVisible && !queueBarDismissed}
           setExpanded={setExpanded}
           onDismiss={dismissQueueBar}
           transactions={transactions}

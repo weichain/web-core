@@ -10,6 +10,7 @@ import { CookieType, selectCookies } from '@/store/cookiesSlice'
 import useChainId from '@/hooks/useChainId'
 import { useRouter } from 'next/router'
 import { AppRoutes } from '@/config/routes'
+import useMetaEvents from './useMetaEvents'
 
 const useGtm = () => {
   const chainId = useChainId()
@@ -37,6 +38,9 @@ const useGtm = () => {
       gtmTrackPageview(router.pathname)
     }
   }, [isAnalyticsEnabled, router.pathname])
+
+  // Track meta events on app load
+  useMetaEvents(isAnalyticsEnabled)
 }
 
 export default useGtm

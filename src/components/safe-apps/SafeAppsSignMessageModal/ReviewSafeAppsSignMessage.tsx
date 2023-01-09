@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { useMemo } from 'react'
 import { hashMessage, _TypedDataEncoder } from 'ethers/lib/utils'
 import { Box } from '@mui/system'
@@ -17,9 +18,8 @@ import type { SafeAppsSignMessageParams } from '../SafeAppsSignMessageModal'
 import useChainId from '@/hooks/useChainId'
 import useAsync from '@/hooks/useAsync'
 import { getSignMessageLibDeploymentContractInstance } from '@/services/contracts/safeContracts'
-import { createTx } from '@/services/tx/txSender'
-import { convertToHumanReadableMessage } from '../utils'
-import { dispatchSafeAppsTx } from '@/services/tx/txSender'
+import useTxSender from '@/hooks/useTxSender'
+import { getDecodedMessage } from '../utils'
 
 type ReviewSafeAppsSignMessageProps = {
   safeAppsSignMessage: SafeAppsSignMessageParams
@@ -29,6 +29,8 @@ const ReviewSafeAppsSignMessage = ({
   safeAppsSignMessage: { message, method, requestId },
 }: ReviewSafeAppsSignMessageProps): ReactElement => {
   const chainId = useChainId()
+  const { createTx, dispatchSafeAppsTx } = useTxSender()
+  const [submitError, setSubmitError] = useState<Error>()
 
   const isTextMessage = method === Methods.signMessage && typeof message === 'string'
   const isTypedMessage = method === Methods.signTypedMessage && isObjectEIP712TypedData(message)
@@ -38,7 +40,7 @@ const ReviewSafeAppsSignMessage = ({
 
   const readableData = useMemo(() => {
     if (isTextMessage) {
-      return convertToHumanReadableMessage(message)
+      return getDecodedMessage(message)
     } else if (isTypedMessage) {
       return JSON.stringify(message, undefined, 2)
     }
@@ -48,7 +50,9 @@ const ReviewSafeAppsSignMessage = ({
     let txData
 
     if (isTextMessage) {
-      txData = signMessageDeploymentInstance.interface.encodeFunctionData('signMessage', [hashMessage(message)])
+      txData = signMessageDeploymentInstance.interface.encodeFunctionData('signMessage', [
+        hashMessage(getDecodedMessage(message)),
+      ])
     } else if (isTypedMessage) {
       const typesCopy = { ...message.types }
 
@@ -68,14 +72,20 @@ const ReviewSafeAppsSignMessage = ({
       data: txData || '0x',
       operation: OperationType.DelegateCall,
     })
-  }, [message])
+  }, [message, createTx])
 
-  const handleSubmit = (txId: string) => {
-    dispatchSafeAppsTx(txId, requestId)
+  const handleSubmit = async () => {
+    setSubmitError(undefined)
+    if (!safeTx) return
+    try {
+      await dispatchSafeAppsTx(safeTx, requestId)
+    } catch (error) {
+      setSubmitError(error as Error)
+    }
   }
 
   return (
-    <SignOrExecuteForm safeTx={safeTx} onSubmit={handleSubmit} error={safeTxError}>
+    <SignOrExecuteForm safeTx={safeTx} onSubmit={handleSubmit} error={safeTxError || submitError}>
       <>
         <SendFromBlock />
 

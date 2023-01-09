@@ -44,7 +44,7 @@ describe('shouldUseEthSignMethod', () => {
     expect(result).toBe(true)
   })
 
-  it('returns true for WalletConnect', () => {
+  it('returns false for WalletConnect', () => {
     const mockWallet: ConnectedWallet = {
       address: ZERO_ADDRESS,
       chainId: '4',
@@ -54,7 +54,7 @@ describe('shouldUseEthSignMethod', () => {
 
     const result = shouldUseEthSignMethod(mockWallet)
 
-    expect(result).toBe(true)
+    expect(result).toBe(false)
   })
 
   it('returns false for MetaMask', () => {

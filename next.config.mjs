@@ -1,5 +1,15 @@
 import path from 'path'
 import withBundleAnalyzer from '@next/bundle-analyzer'
+import NextPwa from 'next-pwa'
+
+const withPWA = NextPwa({
+  disable: process.env.NODE_ENV === 'development',
+  dest: 'public',
+  reloadOnOnline: false,
+  /* Do not precache anything */
+  publicExcludes: ['**/*'],
+  buildExcludes: [/./],
+})
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,25 +18,25 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
-  experimental: {
-    images: {
-      unoptimized: true,
-    },
-    modularizeImports: {
-      '@mui/material': {
-        transform: '@mui/material/{{member}}',
-      },
-      '@mui/icons-material/?(((\\w*)?/?)*)': {
-        transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
-      },
-      lodash: {
-        transform: 'lodash/{{member}}',
-      },
-      'date-fns': {
-        transform: 'date-fns/{{member}}',
-      },
-    },
-  },
+  // experimental: {
+  //   images: {
+  //     unoptimized: true,
+  //   },
+  //   modularizeImports: {
+  //     '@mui/material': {
+  //       transform: '@mui/material/{{member}}',
+  //     },
+  //     '@mui/icons-material/?(((\\w*)?/?)*)': {
+  //       transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
+  //     },
+  //     lodash: {
+  //       transform: 'lodash/{{member}}',
+  //     },
+  //     'date-fns': {
+  //       transform: 'date-fns/{{member}}',
+  //     },
+  //   },
+  // },
   async rewrites() {
     return [
       {
@@ -44,7 +54,7 @@ const nextConfig = {
           loader: '@svgr/webpack',
           options: {
             prettier: false,
-            svgo: true,
+            svgo: false,
             svgoConfig: {
               plugins: [
                 {
@@ -73,4 +83,4 @@ const nextConfig = {
 
 export default withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
-})(nextConfig)
+})(withPWA(nextConfig))

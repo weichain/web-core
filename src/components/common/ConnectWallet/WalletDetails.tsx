@@ -1,22 +1,15 @@
 import { Button, Typography } from '@mui/material'
 import type { ReactElement } from 'react'
 
-import useOnboard, { connectWallet } from '@/hooks/wallets/useOnboard'
-import { OVERVIEW_EVENTS } from '@/services/analytics/events/overview'
 import KeyholeIcon from '@/components/common/icons/KeyholeIcon'
-import { trackEvent } from '@/services/analytics'
+import useConnectWallet from '@/components/common/ConnectWallet/useConnectWallet'
 
 const WalletDetails = ({ onConnect }: { onConnect?: () => void }): ReactElement => {
-  const onboard = useOnboard()
+  const connectWallet = useConnectWallet()
 
-  const handleConnect = async () => {
-    if (!onboard) return
-
-    // We `trackEvent` instead of using `<Track>` as it impedes styling
-    trackEvent(OVERVIEW_EVENTS.OPEN_ONBOARD)
-
+  const handleConnect = () => {
     onConnect?.()
-    connectWallet(onboard)
+    connectWallet()
   }
 
   return (

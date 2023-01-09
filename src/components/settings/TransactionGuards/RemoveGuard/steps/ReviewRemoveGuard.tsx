@@ -8,12 +8,14 @@ import EthHashInfo from '@/components/common/EthHashInfo'
 import type { RemoveGuardData } from '@/components/settings/TransactionGuards/RemoveGuard'
 import { Errors, logError } from '@/services/exceptions'
 import { trackEvent, SETTINGS_EVENTS } from '@/services/analytics'
-import { createRemoveGuardTx } from '@/services/tx/txSender'
+import useTxSender from '@/hooks/useTxSender'
 
-export const ReviewRemoveGuard = ({ data, onSubmit }: { data: RemoveGuardData; onSubmit: (txId: string) => void }) => {
+export const ReviewRemoveGuard = ({ data, onSubmit }: { data: RemoveGuardData; onSubmit: (txId?: string) => void }) => {
+  const { createRemoveGuardTx } = useTxSender()
+
   const [safeTx, safeTxError] = useAsync<SafeTransaction>(() => {
     return createRemoveGuardTx()
-  }, [])
+  }, [createRemoveGuardTx])
 
   useEffect(() => {
     if (safeTxError) {
@@ -21,7 +23,7 @@ export const ReviewRemoveGuard = ({ data, onSubmit }: { data: RemoveGuardData; o
     }
   }, [safeTxError])
 
-  const onFormSubmit = (txId: string) => {
+  const onFormSubmit = (txId?: string) => {
     trackEvent(SETTINGS_EVENTS.MODULES.REMOVE_GUARD)
 
     onSubmit(txId)

@@ -2,7 +2,7 @@ import type { Web3Provider, JsonRpcProvider } from '@ethersproject/providers'
 import type Safe from '@weichain/safe-core-sdk'
 import { SafeFactory, type DeploySafeProps } from '@weichain/safe-core-sdk'
 import { createEthersAdapter } from '@/hooks/coreSDK/safeCoreSDK'
-import type { ChainInfo, SafeInfo } from '@gnosis.pm/safe-react-gateway-sdk'
+import type { ChainInfo, SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { EMPTY_DATA, ZERO_ADDRESS } from '@weichain/safe-core-sdk/dist/src/utils/constants'
 import {
   getFallbackHandlerContractInstance,
@@ -14,13 +14,19 @@ import type { PredictSafeProps } from '@weichain/safe-core-sdk/dist/src/safeFact
 import type { SafeFormData, PendingSafeTx } from '@/components/create-safe/types.d'
 import type { ConnectedWallet } from '@/services/onboard'
 import { BigNumber } from '@ethersproject/bignumber'
-import { getSafeInfo } from '@gnosis.pm/safe-react-gateway-sdk'
+import { getSafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { backOff } from 'exponential-backoff'
 import { SafeCreationStatus } from '@/components/create-safe/status/useSafeCreation'
 import { didRevert, type EthersError } from '@/utils/ethers-utils'
 import { Errors, logError } from '@/services/exceptions'
 import { ErrorCode } from '@ethersproject/logger'
 import { isWalletRejection } from '@/utils/wallets'
+
+export type SafeCreationProps = {
+  owners: string[]
+  threshold: number
+  saltNonce: number
+}
 
 /**
  * Prepare data for creating a Safe for the Core SDK
@@ -36,7 +42,7 @@ export const getSafeDeployProps = (
     safeAccountConfig: {
       threshold: safeParams.threshold,
       owners: safeParams.owners,
-      fallbackHandler: fallbackHandler.address,
+      fallbackHandler: fallbackHandler.getAddress(),
     },
     safeDeploymentConfig: {
       saltNonce: safeParams.saltNonce.toString(),
@@ -84,7 +90,7 @@ export const encodeSafeCreationTx = ({
     threshold,
     ZERO_ADDRESS,
     EMPTY_DATA,
-    fallbackHandlerContract.address,
+    fallbackHandlerContract.getAddress(),
     ZERO_ADDRESS,
     '0',
     ZERO_ADDRESS,
@@ -120,12 +126,6 @@ export const getSafeCreationTxInfo = async (
     value: BigNumber.from(0),
     startBlock: await provider.getBlockNumber(),
   }
-}
-
-export type SafeCreationProps = {
-  owners: string[]
-  threshold: number
-  saltNonce: number
 }
 
 export const estimateSafeCreationGas = async (
@@ -170,6 +170,10 @@ export const handleSafeCreationError = (error: EthersError) => {
     } else {
       return SafeCreationStatus.SUCCESS
     }
+  }
+
+  if (didRevert(error.receipt)) {
+    return SafeCreationStatus.REVERTED
   }
 
   return SafeCreationStatus.TIMEOUT

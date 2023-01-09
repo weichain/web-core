@@ -2,6 +2,7 @@ import { EventType } from '@/services/analytics/types'
 
 export const SAFE_APPS_CATEGORY = 'safe-apps'
 export const SAFE_APPS_SDK_CATEGORY = 'safe-apps-sdk'
+export const SAFE_APPS_ANALYTICS_CATEGORY = 'safe-apps-analytics'
 
 const SAFE_APPS_EVENT_DATA = {
   event: EventType.SAFE_APP,
@@ -33,13 +34,13 @@ export const SAFE_APPS_EVENTS = {
     ...SAFE_APPS_EVENT_DATA,
     action: 'Add custom Safe App',
   },
-  TRANSACTION_CONFIRMED: {
+  PROPOSE_TRANSACTION: {
     ...SAFE_APPS_EVENT_DATA,
-    action: 'Transaction Confirmed',
+    action: 'Propose Transaction',
   },
-  TRANSACTION_REJECTED: {
+  PROPOSE_TRANSACTION_REJECTED: {
     ...SAFE_APPS_EVENT_DATA,
-    action: 'Transaction Rejected',
+    action: 'Propose Transaction Rejected',
   },
   SHARED_APP_LANDING: {
     ...SAFE_APPS_EVENT_DATA,

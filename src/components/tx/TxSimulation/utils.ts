@@ -1,7 +1,7 @@
 import { generatePreValidatedSignature } from '@weichain/safe-core-sdk/dist/src/utils/signatures'
 import EthSafeTransaction from '@weichain/safe-core-sdk/dist/src/utils/transactions/SafeTransaction'
 import { encodeMultiSendData } from '@weichain/safe-core-sdk/dist/src/utils/transactions/utils'
-import { FEATURES, type SafeInfo, type ChainInfo } from '@gnosis.pm/safe-react-gateway-sdk'
+import { FEATURES, type SafeInfo, type ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import type { MetaTransactionData, SafeTransaction } from '@weichain/safe-core-sdk-types'
 
 import {

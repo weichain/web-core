@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { SafeAppData } from '@gnosis.pm/safe-react-gateway-sdk'
+import type { SafeAppData } from '@safe-global/safe-gateway-typescript-sdk'
 import { Typography, SvgIcon } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
@@ -7,6 +7,7 @@ import { SAFE_APPS_EVENTS, trackSafeAppEvent } from '@/services/analytics'
 import CopyButton from '@/components/common/CopyButton'
 import ShareIcon from '@/public/images/common/share.svg'
 import css from './styles.module.css'
+import SafeAppIcon from '../SafeAppIcon'
 
 type CustomAppProps = {
   safeApp: SafeAppData
@@ -20,7 +21,7 @@ const CustomApp = ({ safeApp, shareUrl }: CustomAppProps) => {
 
   return (
     <div className={css.customAppContainer}>
-      <img className={css.customAppIcon} src={safeApp.iconUrl} alt={safeApp.name}></img>
+      <SafeAppIcon src={safeApp.iconUrl} alt={safeApp.name} width={48} height={48} />
 
       <Typography component="h2" mt={2} color="text.primary" fontWeight={700}>
         {safeApp.name}

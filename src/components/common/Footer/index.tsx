@@ -7,6 +7,7 @@ import { openCookieBanner } from '@/store/popupSlice'
 import { AppRoutes } from '@/config/routes'
 import packageJson from '../../../../package.json'
 import AppstoreButton from '../AppStoreButton'
+import ExternalLink from '../ExternalLink'
 
 const footerPages = [AppRoutes.welcome, AppRoutes.settings.index]
 
@@ -27,45 +28,41 @@ const Footer = (): ReactElement | null => {
     <footer className={css.container}>
       <ul>
         <li>
-          <Typography variant="caption">&copy;2022 Safe Ecosystem Foundation</Typography>
+          <Typography variant="caption">&copy;2022–{new Date().getFullYear()} Safe Ecosystem Foundation</Typography>
         </li>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://gnosis-safe.io/terms">
+          <ExternalLink noIcon href="https://safe.global/terms">
             Terms
-          </Link>
+          </ExternalLink>
         </li>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://gnosis-safe.io/privacy">
+          <ExternalLink noIcon href="https://safe.global/privacy">
             Privacy
-          </Link>
+          </ExternalLink>
         </li>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://gnosis-safe.io/licenses">
+          <ExternalLink noIcon href="https://safe.global/licenses">
             Licenses
-          </Link>
+          </ExternalLink>
         </li>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://gnosis-safe.io/imprint">
+          <ExternalLink noIcon href="https://safe.global/imprint">
             Imprint
-          </Link>
+          </ExternalLink>
         </li>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://gnosis-safe.io/cookie">
+          <ExternalLink noIcon href="https://safe.global/cookie">
             Cookie Policy
-          </Link>
+          </ExternalLink>
           &nbsp;&mdash;&nbsp;
           <Link href="#" onClick={onCookieClick}>
             Preferences
           </Link>
         </li>
         <li>
-          <Link
-            rel="noopener noreferrer"
-            target="_blank"
-            href={`${packageJson.homepage}/releases/tag/v${packageJson.version}`}
-          >
+          <ExternalLink noIcon href={`${packageJson.homepage}/releases/tag/v${packageJson.version}`}>
             v{packageJson.version}
-          </Link>
+          </ExternalLink>
         </li>
         <li>
           <AppstoreButton placement="footer" />

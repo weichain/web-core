@@ -19,6 +19,9 @@ describe('Load existing Safe', () => {
     cy.visit('/welcome?chain=matic')
     cy.contains('Accept selection').click()
 
+    // Close banner
+    cy.get('[data-testid=CloseIcon]').click()
+
     // Enters Loading Safe form
     cy.contains('Add existing Safe').click()
     cy.contains('Connect wallet & select network')
@@ -26,22 +29,20 @@ describe('Load existing Safe', () => {
 
   it('should allow choosing the network where the Safe exists', () => {
     // Click the network selector inside the Stepper content
-    cy.contains('Select network on which the Safe was created:').contains('span', 'Polygon').click()
+    cy.get('[data-testid=load-safe-form]').contains('Polygon').click()
 
     // Selects Goerli
     cy.get('ul li')
       .contains(/^G(ö|oe)rli$/)
       .click()
-    cy.contains('Select network on which the Safe was created:').contains('span', /^G(ö|oe)rli$/)
-
-    cy.contains('Continue').click()
+    cy.contains('span', /^G(ö|oe)rli$/)
   })
 
   it('should accept name the Safe', () => {
     // alias the address input label
     cy.get('input[name="address"]').parent().prev('label').as('addressLabel')
 
-    // Name input should have a placeholder ending in 'rinkeby-safe'
+    // Name input should have a placeholder ending in 'goerli-safe'
     cy.get('input[name="name"]')
       .should('have.attr', 'placeholder')
       .should('match', /g(ö|oe)rli-safe/)
@@ -70,10 +71,11 @@ describe('Load existing Safe', () => {
     // cy.contains('Upload an image').click()
     // cy.get('[type="file"]').attachFile('../fixtures/goerli_safe_QR.png')
 
-    // The address field should be filled with the QR code's address
-    cy.get('input[name="address"]').should('have.value', SAFE_QR_CODE_ADDRESS)
+    // The address field should be filled with the "bare" QR code's address
+    const [, address] = SAFE_QR_CODE_ADDRESS.split(':')
+    cy.get('input[name="address"]').should('have.value', address)
 
-    cy.contains('Continue').click()
+    cy.contains('Next').click()
   })
 
   // TODO: register the goerli ENS for the Safe owner when possible
@@ -88,7 +90,7 @@ describe('Load existing Safe', () => {
   it('should set custom name in the first owner', () => {
     // Sets a custom name for the first owner
     cy.get('input[name="owners.0.name"]').type('Test Owner Name').should('have.value', 'Test Owner Name')
-    cy.contains('Continue').click()
+    cy.contains('Next').click()
   })
 
   it('should have Safe and owner names in the Review step', () => {
